@@ -32,6 +32,7 @@ app.post('/youtuber', (req, res) => {
     res.json({message : `${req.body.channelTitle}님, 유튜버 생활을 응원합니다.`});
 })
 
+
 app.delete('/youtubers/:id', (req,res) => {
     let { id } = req.params;
     id = parseInt(id);
@@ -65,6 +66,28 @@ app.delete('/youtubers', (req, res) => {
     res.json({
         message: msg
     })
+    
+})
+
+app.put('/youtubers/:id', (req, res) => {
+    let { id } = req.params;
+    id = parseInt(id);
+
+    let youtuber = db.get(id);
+    
+    if (youtuber == undefined) {
+        res.json({
+            message : `수정하시려고하는 ${id}번은 없는 유튜버입니다.`
+        })
+    } else {
+        const oldTitle = youtuber.channelTitle;
+        const newTitle = req.body.channelTitle;
+        youtuber.channelTitle = newTitle;
+        db.set(id, youtuber);
+        res.json({
+        message : `${oldTitle}님 채널명이 ${newTitle}로 변경되었습니다.`
+    })
+    }
     
 })
 
