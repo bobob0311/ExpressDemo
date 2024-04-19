@@ -19,17 +19,30 @@ app.get('/youtubers/:id', function (req, res) {
 
 app.get('/youtubers', (req, res) => {
     let youtubers = {};
-    db.forEach((value, key) => {
-        youtubers[key] = value;
-    });
-    res.json(youtubers); 
+    if (db.size !== 0) {
+        db.forEach((value, key) => {
+            youtubers[key] = value;
+        });
+        res.json(youtubers); 
+    } else {
+        res.status(404).json({
+            message : "조회할 유튜버가 없습니다."
+        })
+    }
+
 })
 
 // POST를 활용해서 유튜버를 추가 !!
-app.post('/youtuber', (req, res) => {
-    db.set(id++, req.body);
-    console.log(id);
-    res.json({message : `${req.body.channelTitle}님, 유튜버 생활을 응원합니다.`});
+app.post('/youtubers', (req, res) => {
+    const channelTitle = req.body.channelTitle;
+    if (channelTitle) {
+        db.set(id++, req.body);
+        res.status(201).json({message : `${req.body.channelTitle}님, 유튜버 생활을 응원합니다.`});
+    } else {
+        res.status(400).json({
+            message: "요청 값을 제대로 보내주세요."
+        });
+    }
 })
 
 
@@ -40,7 +53,7 @@ app.delete('/youtubers/:id', (req,res) => {
     let youtuber = db.get(id);
 
     if (youtuber == undefined) {
-        res.json({
+        res.status(404).json({
             message : `요청하신 ${id}번은 가입된 유튜버가 아닙니다.`
         })
     } else {
@@ -56,17 +69,14 @@ app.delete('/youtubers/:id', (req,res) => {
 app.delete('/youtubers', (req, res) => {
     // db에 값이 1개 이상이면, 전체 삭제 
     // 값이 없으면 삭제할 유튜버가 없다.
-    let msg = "";
     if (db.size >= 1) {
         db.clear();
-        msg = "전체 유튜버가 삭제되었습니다."              
+        res.json({ message: "전체 유튜버가 삭제되었습니다." });               
     } else {
-        msg = "삭제할 유튜버가 없습니다.";
+        res.status(404).json({
+            message: "삭제할 유튜버가 없습니다."
+        })
     }
-    res.json({
-        message: msg
-    })
-    
 })
 
 app.put('/youtubers/:id', (req, res) => {
@@ -76,7 +86,7 @@ app.put('/youtubers/:id', (req, res) => {
     let youtuber = db.get(id);
     
     if (youtuber == undefined) {
-        res.json({
+        res.status(404).json({
             message : `수정하시려고하는 ${id}번은 없는 유튜버입니다.`
         })
     } else {
