@@ -35,12 +35,23 @@ app.post('/youtuber', (req, res) => {
 app.delete('/youtubers/:id', (req,res) => {
     let { id } = req.params;
     id = parseInt(id);
-    const name = db.get(id).channelTitle;
+
+    let youtuber = db.get(id);
+
+    if (youtuber == undefined) {
+        res.json({
+            message : `요청하신 ${id}번은 가입된 유튜버가 아닙니다.`
+        })
+    } else {
+        const name = youtuber.channelTitle;
     
-    db.delete(id);
-    res.json({
-        message: `${name}님 죄송하지만 삭제요`
-    });
+        db.delete(id);
+        res.json({
+            message: `${name}님 죄송하지만 삭제요`
+        });    
+    }
+
+    
 })
 
 const db = new Map();
@@ -67,4 +78,3 @@ let id = 1;
 db.set(id++, youtuber1);
 db.set(id++, youtuber2);
 db.set(id++, youtuber3);
-
