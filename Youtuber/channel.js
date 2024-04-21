@@ -36,6 +36,7 @@ app
         const channelData = db.get(id);
         if (channelData) {
             res.json(channelData);
+
         } else {
             res.status(404).json({
                 message : "채널 정보를 찾을 수 없습니다."
@@ -43,10 +44,20 @@ app
         }
     })
     .put((req, res) => {
-        res.send("s");
     })
     .delete((req, res) => {
-        res.send("s");
+        let { id } = req.params;
+        id = parseInt(id);
+        
+        const channelData = db.get(id);
+        if (channelData) {
+            db.delete(id);
+            res.json({message : `${channelData.channelTitle} 채널이 정상적으로 삭제되었습니다.`})
+        } else {
+            res.status(404).json({
+                message : "채널 정보를 찾을 수 없습니다."
+            })
+        }
     })
 
 
