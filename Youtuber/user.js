@@ -9,6 +9,7 @@ app.use(express.json());
 
 // 로그인
 app.post('/login', (req, res) => {
+    console.log(req.body);
     const { userId, userPwd } = req.body;
     let loginUser = {};
 
