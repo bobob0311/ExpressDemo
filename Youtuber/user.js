@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 app.listen(1111);
 
+const userData = new Map();
+let id = 1;
+
 // 로그인
-app.post('/login', (req,res) => {
-    
+app.post('/login', (req,res) => {  
 })
 
 // 회원 가입
