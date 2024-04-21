@@ -9,7 +9,21 @@ app.use(express.json());
 
 // 로그인
 app.post('/login', (req, res) => {
-    
+    const { userId, userPwd } = req.body;
+    let loginUser = {};
+
+    db.forEach((user,id) => {
+        if (user.userId === userId) {
+            loginUser = user;
+        }
+    })
+
+    if (Object.keys(loginUser).length) {
+        loginUser.userPwd === userPwd ? console.log("패스워드도 같다.") : console.log("패스워드 틀림 ㅉㅉ")
+    } else {
+        console.log("입력하신 아이디는 없는 아이디 입니다.")
+    }
+
 })
 
 // 회원 가입
