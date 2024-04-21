@@ -25,3 +25,30 @@
 
 - req : URL (id)
 - res : 'name' 님 다음에 또 뵙겠습니다.
+
+## 4. 채널 API 설계
+
+### 4.1 채널 생성 : POST /channels
+
+- req : body(channelTitle)
+- res : 'channelTitle'님 채널을 응원합니다.
+
+### 4.2 채널 수정 : PUT /channels/:id
+
+- req : URL(id), body(channelTitle)
+- res : 채널명이 성공적으로 수정되었습니다. 기존 ' ' -> 수정 ' '
+
+### 4.3 채널 개별 삭제 : DELETE /channels/:id
+
+- req : URL(id)
+- res : 삭제되었습니다.
+
+### 4.4 채널 전체 조회 GET /channels
+
+- req : X
+- res : <채널 전체 데이터>
+
+### 4.5 채널 개별 조회 GET /channels/:id
+
+- req : URL (id)
+- res : <채널 개별 데이터>
