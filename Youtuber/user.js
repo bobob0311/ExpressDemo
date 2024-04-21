@@ -29,6 +29,20 @@ app.post('/join', (req, res) => {
 
 // 회원 개별 조회
 app.get('/users/:id', (req,res) => {
+    let { id } = req.params;
+    id = parseInt(id);
+    
+    const user = db.get(id);
+    if (user) {
+        res.status(200).json({
+            userId: user.userId,
+            name: user.userName,
+        });    
+    } else {
+        res.status(404).json({
+            message : "회원 정보가 없습니다."
+        })
+    }
     
 })
 
