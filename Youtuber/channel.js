@@ -11,7 +11,18 @@ app.use(express.json());
 app
     .route('/channels')
     .get((req, res) => {
-        res.send("s");
+        if (db.size) {
+            let channels = [];
+            db.forEach((value) => {
+                channels.push(value);
+            })
+            res.json(channels);    
+        } else {
+            res.status(404).json({
+                message : "조회할 채널이 없습니다."
+            })
+        }
+        
     })
     .post((req, res) => {
         if (req.body.channelTitle) {
