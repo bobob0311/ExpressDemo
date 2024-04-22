@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const db = new Map();
-let id = 1;
 
 router.use(express.json());
 
@@ -19,9 +18,18 @@ router.post('/login', (req, res) => {
     })
 
     if (Object.keys(loginUser).length) {
-        loginUser.userPwd === userPwd ? console.log("패스워드도 같다.") : console.log("패스워드 틀림 ㅉㅉ")
+        loginUser.userPwd === userPwd ?
+            res.status(200).json({
+                message : `${loginUser.userName}님 로그인 되었습니다.`
+            })
+            :
+            res.status(400).json({
+                message: '비밀번호가 틀렸습니다.'
+            })
     } else {
-        console.log("입력하신 아이디는 없는 아이디 입니다.")
+        res.status(404).json({
+            message: '회원 정보가 없습니다.'
+        })
     }
 
 })
@@ -30,7 +38,7 @@ router.post('/login', (req, res) => {
 router.post('/join', (req, res) => {
     const userData = req.body;
     if (userData.userId && userData.userPwd && userData.userName) {
-        db.set(id++, userData);
+        db.set(userData.userId,userData);
         res.status(201).json({
             message: `${userData.userName}님 환영합니다.`
         })
@@ -42,12 +50,11 @@ router.post('/join', (req, res) => {
 })
 
 router
-    .route('/users/:id')
+    .route('/users')
     .get( (req,res) => {
-        let { id } = req.params;
-        id = parseInt(id);
+        let { userId } = req.body;
     
-        const user = db.get(id);
+        const user = db.get(userId);
         if (user) {
             res.status(200).json({
                 userId: user.userId,
@@ -61,11 +68,11 @@ router
         
     })
     .delete((req,res) => {
-        let { id } = req.params;
-        id = parseInt(id);
-        const user = db.get(id);
+        let { userId } = req.body;
+
+        const user = db.get(userId);
         if (user) {
-            db.delete(id)
+            db.delete(userId)
             res.status(200).json({
                 message: `${user.userName}님 다음에 또 뵙겠습니다.`
             });    
