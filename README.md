@@ -18,12 +18,12 @@
 
 ### 3.3 회원 개별 "조회" : GET /user/:id
 
-- req : URL (id)
+- req : body (userId)
 - res : id, name
 
 ### 3.4 회원 "탈퇴" : DELETE /users/:id
 
-- req : URL (id)
+- req : body (userId)
 - res : 'name' 님 다음에 또 뵙겠습니다.
 
 ## 4. 채널 API 설계
