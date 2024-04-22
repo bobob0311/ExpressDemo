@@ -10,23 +10,30 @@ router.use(express.json());
 router
     .route('/')
     .get((req, res) => {
-        if (db.size) {
+        if (db.size && userId) {
+            let { userId } = req.body;
             let channels = [];
             db.forEach((value) => {
-                channels.push(value);
+                value.userId === userId ? channels.push(value) : null;
             })
-            res.json(channels);    
+            channels.length ?
+                res.json(channels) :
+                res.status(404).json({
+                    message : "조회할 채널이 없습니다."
+                })        
+            res.status(404).json({
+                message : "로그인이 필요한 페이지 입니다."
+            })
         } else {
             res.status(404).json({
                 message : "조회할 채널이 없습니다."
-            })
+            })            
         }
-        
     })
     .post((req, res) => {
-        if (req.body.channelTitle) {
-            db.set(id++, req.body);
-
+        let channel = req.body;
+        if (channel.channelTitle && channel.userId) {
+            db.set(id++, channel);
             res.json({message : `${db.get(id-1).channelTitle}채널을 응원합니다.`});    
         } else {
             console.log(req.body)
