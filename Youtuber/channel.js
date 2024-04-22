@@ -44,6 +44,24 @@ app
         }
     })
     .put((req, res) => {
+        let { id } = req.params;
+        id = parseInt(id);
+
+        let channel = db.get(id);
+        let oldTitle = channel.channelTitle;
+
+        if (channel) {
+            let newTitle = req.body.channelTitle;
+            channel.channelTitle = newTitle;
+            db.set(id, channel);
+            res.json({
+                message : `채널명이 정상적으로 수정되었습니다. 기존 ${oldTitle}에서 수정 ${newTitle}`
+            })
+        } else {
+            res.status(404).json({
+                message: "채널 정보를 찾을 수 없습니다."
+            })
+        }
     })
     .delete((req, res) => {
         let { id } = req.params;
