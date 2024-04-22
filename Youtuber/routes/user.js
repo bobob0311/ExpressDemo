@@ -1,19 +1,18 @@
 const express = require('express');
-const app = express();
-app.listen(1111);
+const router = express.Router();
 
 const db = new Map();
 let id = 1;
 
-app.use(express.json());
+router.use(express.json());
 
 // 로그인
-app.post('/login', (req, res) => {
+router.post('/login', (req, res) => {
     console.log(req.body);
     const { userId, userPwd } = req.body;
     let loginUser = {};
 
-    db.forEach((user,id) => {
+    db.forEach((user) => {
         if (user.userId === userId) {
             loginUser = user;
         }
@@ -28,7 +27,7 @@ app.post('/login', (req, res) => {
 })
 
 // 회원 가입
-app.post('/join', (req, res) => {
+router.post('/join', (req, res) => {
     const userData = req.body;
     if (userData.userId && userData.userPwd && userData.userName) {
         db.set(id++, userData);
@@ -42,7 +41,7 @@ app.post('/join', (req, res) => {
     }
 })
 
-app
+router
     .route('/users/:id')
     .get( (req,res) => {
         let { id } = req.params;
@@ -76,3 +75,6 @@ app
             })
         }
     })
+
+
+module.exports = router;
