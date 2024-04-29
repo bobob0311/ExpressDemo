@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
-const db = new Map();
+const conn = require('../db');
 
 router.use(express.json());
+
+
 
 // 로그인
 router.post('/login', (req, res) => {
@@ -37,6 +38,7 @@ router.post('/login', (req, res) => {
 // 회원 가입
 router.post('/join', (req, res) => {
     const userData = req.body;
+
     if (userData.userId && userData.userPwd && userData.userName) {
         db.set(userData.userId,userData);
         res.status(201).json({
@@ -52,20 +54,19 @@ router.post('/join', (req, res) => {
 router
     .route('/users')
     .get( (req,res) => {
-        let { userId } = req.body;
+        let { email } = req.body;
     
-        const user = db.get(userId);
-        if (user) {
-            res.status(200).json({
-                userId: user.userId,
-                name: user.userName,
-            });    
-        } else {
-            res.status(404).json({
-                message : "회원 정보가 없습니다."
-            })
-        }
-        
+        conn.query('SELECT * FROM `users` WHERE email = ?',email,
+            function (err, results, fields) {
+                if (results.length) {
+                    res.status(200).json(results);    
+                } else {
+                    res.status(404).json({
+                        message : "회원 정보가 없습니다."
+                    })
+                }
+            }
+        );
     })
     .delete((req,res) => {
         let { userId } = req.body;
