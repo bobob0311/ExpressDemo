@@ -37,18 +37,13 @@ router.post('/login', (req, res) => {
 
 // 회원 가입
 router.post('/join', (req, res) => {
-    const userData = req.body;
-
-    if (userData.userId && userData.userPwd && userData.userName) {
-        db.set(userData.userId,userData);
-        res.status(201).json({
-            message: `${userData.userName}님 환영합니다.`
-        })
-    } else {
-        res.status(400).json({
-            message : "입력 값을 다시 확인해 주세요."
-        })
-    }
+        const { email, name, password, contact } = req.body;
+ 
+        conn.query('INSERT INTO users (email, name, password, contact) VALUES (?, ?, ?, ?)', [email, name, password, contact],
+            function (err, results, fields) {
+                res.status(201).json(results);    
+            }
+        );       
 })
 
 router
