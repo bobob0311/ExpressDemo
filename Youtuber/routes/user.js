@@ -37,13 +37,20 @@ router.post('/login', (req, res) => {
 
 // 회원 가입
 router.post('/join', (req, res) => {
+    if (req.body == {}) {
+        res.status(400).json({
+            message : '입력 값을 다시 확인해주세요'
+        })
+    } else {
         const { email, name, password, contact } = req.body;
- 
+    
         conn.query('INSERT INTO users (email, name, password, contact) VALUES (?, ?, ?, ?)', [email, name, password, contact],
             function (err, results, fields) {
                 res.status(201).json(results);    
             }
-        );       
+        );
+    }
+               
 })
 
 router
@@ -64,19 +71,13 @@ router
         );
     })
     .delete((req,res) => {
-        let { userId } = req.body;
-
-        const user = db.get(userId);
-        if (user) {
-            db.delete(userId)
-            res.status(200).json({
-                message: `${user.userName}님 다음에 또 뵙겠습니다.`
-            });    
-        } else {
-            res.status(404).json({
-                message : "회원 정보가 없습니다."
-            })
-        }
+        let { email } = req.body;
+        
+        conn.query('DELETE FROM users WHERE email = ?', email,
+            function (err, results, fields) {
+                res.status(200).json(results);
+            }
+        );
     })
 
 
