@@ -8,31 +8,23 @@ router.use(express.json());
 
 // 로그인
 router.post('/login', (req, res) => {
-    console.log(req.body);
-    const { userId, userPwd } = req.body;
-    let loginUser = {};
+    const { email, password } = req.body;
 
-    db.forEach((user) => {
-        if (user.userId === userId) {
-            loginUser = user;
+    conn.query('SELECT * FROM `users` WHERE email = ?',email,
+        function (err, results, fields) {
+            let loginUser = results[0];
+            
+            if (loginUser && loginUser.password == password) {
+                res.status(200).json({
+                    message: `${loginUser.name}님 로그인 되었습니다.`
+                })
+            } else {
+                res.status(404).json({
+                    message : "이메일 또는 비밀번호가 틀렸습니다."
+                })
+            }
         }
-    })
-
-    if (Object.keys(loginUser).length) {
-        loginUser.userPwd === userPwd ?
-            res.status(200).json({
-                message : `${loginUser.userName}님 로그인 되었습니다.`
-            })
-            :
-            res.status(400).json({
-                message: '비밀번호가 틀렸습니다.'
-            })
-    } else {
-        res.status(404).json({
-            message: '회원 정보가 없습니다.'
-        })
-    }
-
+    );    
 })
 
 // 회원 가입
