@@ -9,25 +9,22 @@ router.use(express.json());
 router
     .route('/')
     .get((req, res) => {
-        if (db.size && userId) {
-            let { userId } = req.body;
-            let channels = [];
-            db.forEach((value) => {
-                value.userId === userId ? channels.push(value) : null;
-            })
-            channels.length ?
-                res.json(channels) :
-                res.status(404).json({
-                    message : "조회할 채널이 없습니다."
-                })        
-            res.status(404).json({
-                message : "로그인이 필요한 페이지 입니다."
-            })
-        } else {
-            res.status(404).json({
-                message : "조회할 채널이 없습니다."
-            })            
-        }
+        let { userId } = req.body;
+        
+        let sql = `SELECT * FROM channel WHERE user_id = ?`
+        userId ? conn.query(sql, userId,
+            function (err, results) {
+                if (results.length) {
+                    res.status(200).json(results);    
+                } else {
+                    res.status(404).json({
+                        message : "채널 정보를 찾을 수 없습니다."
+                    })
+                }
+            }
+        )
+        :
+        res.status(400).end();
     })
     .post((req, res) => {
         let channel = req.body;
@@ -49,7 +46,7 @@ router
         let { id } = req.params;
         id = parseInt(id);
         
-        let sql = `SELECT * FROM channel WHERE user_id = ?`
+        let sql = `SELECT * FROM channel WHERE id = ?`
         conn.query(sql, id,
             function (err, results) {
                 if (results.length) {
