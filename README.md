@@ -30,22 +30,22 @@
 
 ### 4.1 채널 생성 : POST /channels
 
-- req : body(channelTitle, userId) cf. userId는 body X header 숨겨서 받아야 한다.(Token)
-- res : 'channelTitle'님 채널을 응원합니다.
+- req : body(name, user_Id) cf. userId는 body X header 숨겨서 받아야 한다.(Token)
+- res : 'name'님 채널을 응원합니다.
 
 ### 4.2 채널 수정 : PUT /channels/:id
 
-- req : URL(id), body(channelTitle)
+- req : URL(id), body(name)
 - res : 채널명이 성공적으로 수정되었습니다. 기존 ' ' -> 수정 ' '
 
 ### 4.3 채널 개별 삭제 : DELETE /channels/:id
 
 - req : URL(id)
-- res : 삭제되었습니다.
+- res : 'name'이 정상적으로 삭제되었습니다.
 
 ### 4.4 회원의 채널 전체 조회 GET /channels
 
-- req : body(userId)
+- req : body(user_Id)
 - res : <채널 전체 데이터>
 
 ### 4.5 채널 개별 조회 GET /channels/:id
