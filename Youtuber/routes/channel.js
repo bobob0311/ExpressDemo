@@ -27,10 +27,15 @@ router
         res.status(400).end();
     })
     .post((req, res) => {
-        let channel = req.body;
-        if (channel.channelTitle && channel.userId) {
-            db.set(id++, channel);
-            res.json({message : `${db.get(id-1).channelTitle}채널을 응원합니다.`});    
+        const { name, userId} = req.body;
+        
+        if (name && userId) {
+            const sql = 'INSERT INTO channel (name, user_id) VALUES (?, ?)';
+            const values = [name, userId];
+            conn.query(sql, values,
+                function (err, results) {
+                    res.status(201).json(results);
+                });
         } else {
             console.log(req.body)
             res.status(400).json({
