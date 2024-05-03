@@ -9,10 +9,11 @@ router.use(express.json());
 // 로그인
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
+    const sql = 'SELECT * FROM `users` WHERE email = ?';
 
-    conn.query('SELECT * FROM `users` WHERE email = ?',email,
-        function (err, results, fields) {
-            let loginUser = results[0];
+    conn.query(sql, email,
+        function (err, results) {
+            const loginUser = results[0];
             
             if (loginUser && loginUser.password == password) {
                 res.status(200).json({
@@ -35,9 +36,11 @@ router.post('/join', (req, res) => {
         })
     } else {
         const { email, name, password, contact } = req.body;
-    
-        conn.query('INSERT INTO users (email, name, password, contact) VALUES (?, ?, ?, ?)', [email, name, password, contact],
-            function (err, results, fields) {
+
+        const sql = 'INSERT INTO users (email, name, password, contact) VALUES (?, ?, ?, ?)';
+        const values = [email, name, password, contact];
+        conn.query(sql, values,
+            function (err, results) {
                 res.status(201).json(results);    
             }
         );
@@ -45,12 +48,14 @@ router.post('/join', (req, res) => {
                
 })
 
+// 회원 조회 , 회원 삭제 
 router
     .route('/users')
     .get( (req,res) => {
-        let { email } = req.body;
+        const { email } = req.body;
     
-        conn.query('SELECT * FROM `users` WHERE email = ?',email,
+        const sql = 'SELECT * FROM `users` WHERE email = ?';
+        conn.query(sql,email,
             function (err, results, fields) {
                 if (results.length) {
                     res.status(200).json(results);    
@@ -63,9 +68,10 @@ router
         );
     })
     .delete((req,res) => {
-        let { email } = req.body;
+        const { email } = req.body;
         
-        conn.query('DELETE FROM users WHERE email = ?', email,
+        const sql = 'DELETE FROM users WHERE email = ?';
+        conn.query(sql, email,
             function (err, results, fields) {
                 res.status(200).json(results);
             }
