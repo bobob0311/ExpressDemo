@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const conn = require('../db');
 
-const db = new Map();
-let id = 1;
 
 router.use(express.json());
 
@@ -50,15 +49,18 @@ router
         let { id } = req.params;
         id = parseInt(id);
         
-        const channelData = db.get(id);
-        if (channelData) {
-            res.json(channelData);
-
-        } else {
-            res.status(404).json({
-                message : "채널 정보를 찾을 수 없습니다."
-            })
-        }
+        let sql = `SELECT * FROM channel WHERE user_id = ?`
+        conn.query(sql, id,
+            function (err, results) {
+                if (results.length) {
+                    res.status(200).json(results);    
+                } else {
+                    res.status(404).json({
+                        message : "채널 정보를 찾을 수 없습니다."
+                    })
+                }
+            }
+        )
     })
     .put((req, res) => {
         let { id } = req.params;
