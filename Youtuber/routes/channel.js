@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const conn = require('../db');
+const { body, validationResult } = require('express-validator')
 
 
 router.use(express.json());
@@ -26,23 +27,33 @@ router
         :
         res.status(400).end();
     })
-    .post((req, res) => {
-        const { name, userId} = req.body;
-        
-        if (name && userId) {
+    .post(
+        [
+            body('userId').notEmpty().isInt().withMessage('userId는 숫자만 가능합니다.'),
+            body('name').notEmpty().isString().withMessage('name은 문자로 입력하셔야합니다.')
+        ]
+        , (req, res) => {
+            const err = validationResult(req);
+
+            if (!err.isEmpty()) {
+                return res.status(400).json(err.array());
+            }
+
+            const { name, userId} = req.body;
+            
+            
             const sql = 'INSERT INTO channel (name, user_id) VALUES (?, ?)';
             const values = [name, userId];
             conn.query(sql, values,
                 function (err, results) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(400).end()
+                    }
+                        
                     res.status(201).json(results);
                 });
-        } else {
-            console.log(req.body)
-            res.status(400).json({
-                message : "요청 값을 제대로 보내주세요."
-            })
-        }
-    })
+        })
 
 // 채널 개별 조회, 채널 개별 수정, 채널 개별 삭제
 router
