@@ -127,24 +127,37 @@ router
                     if (results.affectedRows == 0) {
                         return res.status(400).end();
                     }
-                    
+
                     res.status(200).json(results);    
                 }
             )
         })
-    .delete((req, res) => {
-        let { id } = req.params;
-        id = parseInt(id);
-        
-        const channelData = db.get(id);
-        if (channelData) {
-            db.delete(id);
-            res.json({message : `${channelData.channelTitle} 채널이 정상적으로 삭제되었습니다.`})
-        } else {
-            res.status(404).json({
-                message : "채널 정보를 찾을 수 없습니다."
-            })
-        }
-    })
+    .delete(
+        param('id').notEmpty().withMessage('채널 id 필요')
+        , (req, res) => {
+            const err = validationResult(req);
+
+            if (!err.isEmpty()) {
+                return res.status(400).json(err.array());
+            }
+
+            let { id } = req.params;
+            id = parseInt(id);
+    
+            const sql = 'DELETE FROM channel WHERE id = ?';
+            conn.query(sql, id,
+                function (err, results) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(400).end();
+                    }
+                    if (results.affectedRows == 0) {
+                        return res.status(400).end();
+                    }
+
+                    res.status(200).json(results);
+                }
+            );
+        })
 
 module.exports = router;
