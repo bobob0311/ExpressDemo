@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
+const dotenv = require('dotenv');
 
-app.listen(1117);
+dotenv.config();
+
+app.listen(process.env.PORT);
 
 const userRouter = require('./routes/user');
 const channelRouter = require('./routes/channel');
