@@ -6,17 +6,25 @@ const { body, param, validationResult } = require('express-validator')
 
 router.use(express.json());
 
+const validate = (req, res, next) => {
+    const err = validationResult(req);
+
+    if (err.isEmpty()) {
+        return next(); // 다음 할 일 (미들웨어, 함수 등등..)
+    } else {
+        return res.status(400).json(err.array());
+    }
+}
+
 // 채널 전체 조회, 채널 생성
 router
     .route('/')
-    .get(body('userId').notEmpty().isInt().withMessage('userId는 숫자로 입력하셔야합니다.')
+    .get(
+    [
+        body('userId').notEmpty().isInt().withMessage('userId는 숫자로 입력하셔야합니다.'),
+        validate
+    ]
         , (req, res) => {
-            const err = validationResult(req);
-
-            if (!err.isEmpty()) {
-                return res.status(400).json(err.array());
-            }
-
             let { userId } = req.body;
             
             let sql = `SELECT * FROM channel WHERE user_id = ?`
@@ -42,17 +50,11 @@ router
     .post(
         [
             body('userId').notEmpty().isInt().withMessage('userId는 숫자로 입력하셔야합니다.'),
-            body('name').notEmpty().isString().withMessage('name은 문자로 입력하셔야합니다.')
+            body('name').notEmpty().isString().withMessage('name은 문자로 입력하셔야합니다.'),
+            validate
         ]
         , (req, res) => {
-            const err = validationResult(req);
-
-            if (!err.isEmpty()) {
-                return res.status(400).json(err.array());
-            }
-
-            const { name, userId} = req.body;
-            
+            const { name, userId} = req.body;            
             
             const sql = 'INSERT INTO channel (name, user_id) VALUES (?, ?)';
             const values = [name, userId];
@@ -70,15 +72,12 @@ router
 // 채널 개별 조회, 채널 개별 수정, 채널 개별 삭제
 router
     .route('/:id')
-    .get(param('id').notEmpty().withMessage('채널 id 필요')
+    .get(
+        [
+            param('id').notEmpty().withMessage('채널 id 필요'),
+            validate
+        ]
         , (req, res) => {
-
-            const err = validationResult(req);
-
-            if (!err.isEmpty()) {
-                return res.status(400).json(err.array());
-            }
-
             let { id } = req.params;
             id = parseInt(id);
             
@@ -100,19 +99,16 @@ router
                 }
             )
         })
-    .put([
-        param('id').notEmpty().withMessage('채널 id 필요'),
-        body('name').notEmpty().isString().withMessage('채널명 오류')
+    .put(
+        [
+            param('id').notEmpty().withMessage('채널 id 필요'),
+            body('name').notEmpty().isString().withMessage('채널명 오류'),
+            validate
         ]
         , (req, res) => {
-            const err = validationResult(req);
-
-            if (!err.isEmpty()) {
-                return res.status(400).json(err.array());
-            }
-
             let { id } = req.params;
             id = parseInt(id);
+
             let { name } = req.body;
 
             let sql = `UPDATE channel SET name = ? WHERE id = ?`
@@ -133,14 +129,11 @@ router
             )
         })
     .delete(
-        param('id').notEmpty().withMessage('채널 id 필요')
+        [
+            param('id').notEmpty().withMessage('채널 id 필요'),
+            validate
+        ]
         , (req, res) => {
-            const err = validationResult(req);
-
-            if (!err.isEmpty()) {
-                return res.status(400).json(err.array());
-            }
-
             let { id } = req.params;
             id = parseInt(id);
     
