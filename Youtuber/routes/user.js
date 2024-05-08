@@ -45,15 +45,22 @@ router.post(
                     const token = jwt.sign({
                         email: loginUser.email,
                         name : loginUser.name,
-                    },process.env.PRIVATE_KEY)
+                    }, process.env.PRIVATE_KEY, {
+                        //유효기간 설정
+                        expiresIn: '5m',
+                        issuer: 'bo sung'
+                    })
 
-                    res.cookie("token",token);
+                    res.cookie("token", token, {
+                        httpOnly: true
+                    });
+                    console.log(token);
 
                     res.status(200).json({
                         message: `${loginUser.name}님 로그인 되었습니다.`
                     })
                 } else {
-                    res.status(404).json({
+                    res.status(403).json({
                         message : "이메일 또는 비밀번호가 틀렸습니다."
                     })
                 }
