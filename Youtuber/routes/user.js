@@ -54,7 +54,6 @@ router.post(
                     res.cookie("token", token, {
                         httpOnly: true
                     });
-                    console.log(token);
 
                     res.status(200).json({
                         message: `${loginUser.name}님 로그인 되었습니다.`
