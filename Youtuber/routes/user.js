@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const conn = require('../db');
-const { body, param,  validationResult } = require('express-validator')
+const { body, param, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 router.use(express.json());
 
@@ -13,7 +17,7 @@ const validate = (req, res, next) => {
     } else {
         return res.status(400).json(err.array());
     }
-}
+};
 
 // 로그인
 router.post(
@@ -33,10 +37,18 @@ router.post(
                         console.log(err);
                         return res.status(400).end();
                     }
-                    
+
                 const loginUser = results[0];
                 
                 if (loginUser && loginUser.password == password) {
+                    //token 발급
+                    const token = jwt.sign({
+                        email: loginUser.email,
+                        name : loginUser.name,
+                    },process.env.PRIVATE_KEY)
+
+                    res.cookie("token",token);
+
                     res.status(200).json({
                         message: `${loginUser.name}님 로그인 되었습니다.`
                     })
